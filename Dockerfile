@@ -22,7 +22,12 @@ RUN \
     rm jai_core-*jar jai_imageio-*.jar jai_codec-*.jar  && \
     apk del curl  && \
     rm -r /tmp/* 
-     
+    
+# Install plugins (importer)
+RUN curl -L http://sourceforge.net/projects/geoserver/files/GeoServer/${GS_VERSION}/extensions/geoserver-${GS_VERSION}-importer-plugin.zip > /tmp/geoserver-importer-plugin.zip && \
+    unzip /tmp/geoserver-importer-plugin.zip -d $CATALINA_HOME/webapps/geoserver/WEB-INF/lib/ && \
+    rm /tmp/*     
+    
 ENV JAVA_OPTS "-server -Xms128m -Xmx256m"
 
 COPY entrypoint.sh /entrypoint.sh
