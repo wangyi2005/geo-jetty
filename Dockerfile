@@ -10,7 +10,7 @@ RUN \
     mv /tmp/jai*/lib/*.so $JAVA_HOME/lib/amd64/  && \
     rm -r /tmp/*
     
-# Install geoserver
+# Install geoserver and plugins (importer)
 ARG GS_VERSION=2.13.0
 ENV GEOSERVER_HOME /geoserver-$GS_VERSION
 RUN \
@@ -20,15 +20,12 @@ RUN \
     chmod -R g+rwX $GEOSERVER_HOME && \
     cd $GEOSERVER_HOME/webapps/geoserver/WEB-INF/lib  && \
     rm jai_core-*jar jai_imageio-*.jar jai_codec-*.jar  && \
+    curl -L http://sourceforge.net/projects/geoserver/files/GeoServer/${GS_VERSION}/extensions/geoserver-${GS_VERSION}-importer-plugin.zip > /tmp/geoserver-importer-plugin.zip && \
+    unzip /tmp/geoserver-importer-plugin.zip -d $CATALINA_HOME/webapps/geoserver/WEB-INF/lib/ && \ 
     apk del curl  && \
     rm -r /tmp/* 
     
-# Install plugins (importer)
-RUN curl -L http://sourceforge.net/projects/geoserver/files/GeoServer/${GS_VERSION}/extensions/geoserver-${GS_VERSION}-importer-plugin.zip > /tmp/geoserver-importer-plugin.zip && \
-    unzip /tmp/geoserver-importer-plugin.zip -d $CATALINA_HOME/webapps/geoserver/WEB-INF/lib/ && \
-    rm /tmp/*     
-    
-ENV JAVA_OPTS "-server -Xms128m -Xmx256m"
+ENV JAVA_OPTS "-server -Xms128m -Xmx384m"
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh 
